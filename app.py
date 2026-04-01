@@ -290,20 +290,26 @@ with tab_results:
         .groupby(["Plant", "Product Variety", "Pick Date"])
         .agg(
             Total_Yield_Kg=("Yield Kg", "sum"),
-            Total_Area_Ha=("Variety Area (ha)", "sum")
+            Total_Area_Ha=("Variety Area (ha)", "sum"),
+            # Weighted average cost per kg — weighted by yield kg
+            Weighted_Cost=("Cost Per Kg - Total Harvest Cost", lambda x: 
+                (x * filtered_df.loc[x.index, "Yield Kg"]).sum() / 
+                filtered_df.loc[x.index, "Yield Kg"].sum()
+                if filtered_df.loc[x.index, "Yield Kg"].sum() > 0 else 0
+            )
         )
         .reset_index()
     )
-    variety_totals["Yield/Ha"] = (
-        variety_totals["Total_Yield_Kg"] / variety_totals["Total_Area_Ha"]
-    )
-
-    # Merge Yield/Ha back onto filtered_df
+    variety_totals["Yield/Ha"] = variety_totals["Total_Yield_Kg"] / variety_totals["Total_Area_Ha"]
+    
     filtered_df = filtered_df.merge(
-        variety_totals[["Plant", "Product Variety", "Pick Date", "Yield/Ha"]],
+        variety_totals[["Plant", "Product Variety", "Pick Date", "Yield/Ha", "Weighted_Cost"]],
         on=["Plant", "Product Variety", "Pick Date"],
         how="left"
     )
+    
+    # Replace Cost Per Kg with the variety-level weighted average
+    filtered_df["Cost Per Kg - Total Harvest Cost"] = filtered_df["Weighted_Cost"]
 
     filtered_df["Cost/Ha"] = (
         filtered_df["Cost Per Kg - Total Harvest Cost"] * filtered_df["Yield/Ha"]
