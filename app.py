@@ -696,7 +696,16 @@ with tab_results:
     )
     
     current_footprint = step2["Variety Area (ha)"].sum()
-    print(current_footprint)
+    st.markdown("### 📈 Growth Assumptions")
+
+    col_f1, col_f2 = st.columns(2)
+    
+    footprint_expansion = col_f1.number_input(
+        "Footprint (Total Ha)",
+        value=float(current_footprint),
+        step=1.0
+    )
+
     
     projection_years = st.slider(
         "Projection Period (Years)",
