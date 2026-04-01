@@ -66,7 +66,7 @@ with tab_results:
     # ============================================================
     # PROCESS HARVEST DATA
     # ============================================================
-    df = pd.read_excel("data/Actuals.xlsx")    
+    df = pd.read_excel("data/Actuals_.xlsx")    
     df.columns = df.columns.str.strip()
     st.success("Harvest file uploaded successfully!")
 
