@@ -674,6 +674,29 @@ with tab_results:
         grouped_summary["Plant"] == "TOTAL",
         "Savings_Yield_loss_cost"
     ].values[0]
+
+    df_plant_raw = df[
+        (df["Fiscal Year"] == 2025) &
+        (df["Plant"].isin(selected_plants))
+    ]
+    
+    step1 = (
+        df_plant_raw
+        .groupby(["Plant", "Location", "Product Variety",
+                  "Pick Event Number", "Pick Event: First Pick Date"])["Variety Area (ha)"]
+        .mean()
+        .reset_index()
+    )
+    
+    step2 = (
+        step1
+        .groupby(["Plant", "Location", "Product Variety"])["Variety Area (ha)"]
+        .max()
+        .reset_index()
+    )
+    
+    current_footprint = step2["Variety Area (ha)"].sum()
+    print(current_footprint)
     
     projection_years = st.slider(
         "Projection Period (Years)",
