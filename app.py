@@ -339,7 +339,7 @@ with tab_results:
         
     
     # Group by Pick Date AND Plant — each plant has its own independent capacity pool
-    # Sort first (this replaces groupby apply logic ordering)
+    ## Sort by Pick Date, Plant, Location, then Cost/Ha priority
     filtered_df = filtered_df.sort_values(
         ["Pick Date", "Plant", "Location", "Cost/Ha"],
         ascending=[True, True, True, False]
@@ -348,21 +348,21 @@ with tab_results:
     # Initialize column
     filtered_df["Area_Harvested"] = 0.0
     
-    # Apply allocation per group manually
-    for (pick_date, plant, location), group in filtered_df.groupby(["Pick Date", "Plant", "Location"]):
+    # Keep groupby at Plant level — ONE capacity pool per plant per day
+    for (pick_date, plant), group in filtered_df.groupby(["Pick Date", "Plant"]):
     
-        remaining_capacity = daily_capacity_ha
-        
+        remaining_capacity = daily_capacity_ha  # shared across ALL locations in the plant
+    
         for idx in group.index:
             variety_area = filtered_df.loc[idx, "Variety Area (ha)"]
-            
+    
             if remaining_capacity <= 0:
                 area = 0
             elif remaining_capacity >= variety_area:
                 area = variety_area
             else:
                 area = remaining_capacity
-            
+    
             filtered_df.loc[idx, "Area_Harvested"] = area
             remaining_capacity -= area
 
