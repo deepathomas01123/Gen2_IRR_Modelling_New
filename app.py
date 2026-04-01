@@ -300,6 +300,14 @@ with tab_results:
         filtered_df["Cost Per Kg - Total Harvest Cost"] * filtered_df["Yield/Ha"]
     )
 
+    # TEMP DEBUG — remove after confirming
+    st.write("Sample Yield/Ha for Arana C00-009:")
+    st.write(
+        filtered_df[filtered_df["Product Variety"] == "Arana C00-009"]
+        [["Location", "Pick Date", "Yield Kg", "Variety Area (ha)", "Yield/Ha"]]
+        .head(10)
+    )
+
     # ============================================================
     # ALLOCATION LOGIC
     # Daily capacity (ha) = num_machines × session_length × harvest_speed
