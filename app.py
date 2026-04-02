@@ -666,7 +666,7 @@ with tab_results:
 
     cpi_pct = col_f2.number_input(
         "CPI Increase (%)",
-        value=3.0,
+        value=2.5,
         step=0.5
     ) / 100
 
